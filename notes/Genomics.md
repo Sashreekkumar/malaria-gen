@@ -24,4 +24,17 @@
 	→ bed, bim, fam 
 	→ fastq
 
+### Phylogentic Tree:
+- Phylogenetic trees are used to represent the evolutionary relationships(often called the **tips** or **leaves** of the tree) are connected together by tree **branches** with their length representing the amount of genetic change that has occured between individuals.
+-  Individual branches are internally connected together by **parent nodes**. These nodes represent common ancestors inferred from the data. The common ancestor of all individuals in the tree is represented by its root.
+- Such a tree with root is called rooted tree. A tree without such information called the unrooted tree can be designed, but we can’t infer the direction of the evolutionary path without applying time-scale based on known mutation rates.
+- **Neighbour Joining Trees:** Based on minimum evolution; The concept assumes that the tree with the shortest sum of branch lenghts is correct tree i.e principle of parsimony. Neighbour-joining trees are derived by determining which individuals at the end of the tree branches are neighbours by clustering together the closest related individuals in a interative process.
 
+### Transcription:
+- Genes are transcribed into mRNA, which means that the DNA sequence from the gene region is “read” and used as a template to build an mRNA molecule with an equivalent nucleotide sequence. mRNA forms the template from which a protein's amino acids are formed.
+- For many genes, the process of transcription is followed by splicing, which means that parts of the sequence are cut out before the mRNA is translated into protein. The parts of the gene sequence that are cut out are called “introns”. The parts of the gene sequence that are kept and included in the final mRNA molecule are called “exons”.
+- Often there are alternative ways in which a gene sequence can be read during transcription. For example, each transcript may include different exons, or exons may vary in length. Alternative splicing can allow the same gene to encode different proteins, which may perform different functions.
+- A change to the DNA sequence of a gene encoding for different transcripts has the potential to impact on protein function more than once, with the outcome dependent on the transcript under investigation.
+- Mostly the exons comprise DNA sequence that is translated into an amino acid sequence, and these protein-coding segments are called “CDSs”, which stands for coding sequences
+- Some genes also include “UTRs” which are untranslated regions at the start and end of the gene sequence. These UTRs are included in the exons but do not get translated into protein. A UTR at the start of the gene is called a “five prime UTR” and a UTR at the end of a gene is called a “three prime UTR”.
+	**Exons:** Exons are the protein-coding sequences of DNA and RNA that remain in mature messenger RNA (mRNA) after RNA splicing, where non-coding introns are removed.
