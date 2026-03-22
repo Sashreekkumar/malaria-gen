@@ -1,0 +1,11 @@
+id,features,labels
+0,https://vo_agam_output.cog.sanger.ac.uk/AR0047-C.gatk.zarr.zip,coluzzii
+1,https://vo_agam_output.cog.sanger.ac.uk/AR0049-C.gatk.zarr.zip,coluzzii
+1242,https://vo_agam_output.cog.sanger.ac.uk/AG0147-C.gatk.zarr.zip,bissau
+3,https://vo_agam_output.cog.sanger.ac.uk/AR0061-C.gatk.zarr.zip,coluzzii
+97,https://vo_agam_output.cog.sanger.ac.uk/AB0103-C.gatk.zarr.zip,gambiae
+104,https://vo_agam_output.cog.sanger.ac.uk/AB0114-C.gatk.zarr.zip,coluzzii
+121,https://vo_agam_output.cog.sanger.ac.uk/AB0133-C.gatk.zarr.zip,gambiae
+122,https://vo_agam_output.cog.sanger.ac.uk/AB0134-C.gatk.zarr.zip,gambiae
+1246,https://vo_agam_output.cog.sanger.ac.uk/AG0153-C.gatk.zarr.zip,bissau
+135,https://vo_agam_output.cog.sanger.ac.uk/AB0148-Cx.gatk.zarr.zip,gambiae
