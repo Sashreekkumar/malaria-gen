@@ -16,7 +16,7 @@ OUTPUT_DIR    = "./extracted"
 TEMP_DIR      = "./temp"
 PROGRESS_FILE = "progress.txt"
 CHUNK_SIZE    = 1024 * 1024 * 4
-LIMIT         = 3                   # set to None to process all files
+LIMIT         = None                 # set to None to process all files
 
 
 # ─── Progress tracking ───────────────────────────────────────────────────────
