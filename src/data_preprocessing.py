@@ -1,5 +1,6 @@
 import zarr
 import numpy as np
+import os
 
 # Applying 0/1/2 Encoding
 def encode_012(arr: np.ndarray, ref_allele_val: int = 0) -> np.ndarray:
@@ -67,7 +68,14 @@ def compute_maf_mask(csv_path: str, snp_folder: str,
 
 def encode_and_save_filtered(sample_path: str, out_dir: str, sample_id: int,
                              maf_mask: np.ndarray, chunk_size: int = 100000) -> str:
-    store    = zarr.open(str(sample_path) + "/gt", mode='r')
+    
+    if os.path.exists(str(sample_path) + "/GT"):
+        gt_path = str(sample_path) + "/GT"
+    elif os.path.exists(str(sample_path) + "/gt"):
+        gt_path = str(sample_path) + "/gt"
+    else:
+        raise FileNotFoundError(f"No gt or GT folder found in {sample_path}")
+    store = zarr.open(gt_path, mode='r')  # ← use the detected path
     n        = store.shape[0]
     n_kept   = int(maf_mask.sum())
     out_path = os.path.join(out_dir, f"{sample_id}.dat")
