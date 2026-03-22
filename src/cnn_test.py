@@ -8,11 +8,10 @@ import os
 from pathlib import Path
 from scipy.sparse import csr_matrix, vstack
 from data_preprocessing import encode_012, check_call_rate, encode_and_save_filtered
-from cnn import SNP_CNN  # wherever you defined the model class
-from sklearn.metrics import classification_report, confusion_matrix
+from cnn import SNP_CNN
+from sklearn.metrics import classification_report, confusion_matrix, balanced_accuracy_score, matthews_corrcoef
 
 
-# ── paths ─────────────────────────────────────────────────────────────────────
 MASK_PATH        = "/home/sashreekkumar/Documents/Projects/malariagen/cache/maf_mask.npy"
 SVD_PATH         = "/home/sashreekkumar/Documents/Projects/malariagen/cache/svd_model.pkl"
 CNN_MODEL_PATH   = "/home/sashreekkumar/Documents/Projects/malariagen/cnn_model.pt"
@@ -45,9 +44,6 @@ if __name__ == "__main__":
 
     for sid in sample_ids:
         sample_path = Path(TEST_FOLDER) / str(sid)
-        print(f"sample_path: {sample_path}")
-        print(f"gt path: {str(sample_path)}/gt")
-        print(f"exists: {sample_path.exists()}")
         out_path    = os.path.join(TEST_ENCODED_DIR, f"{sid}.dat")
         if not sample_path.exists():
             print(f"[SKIP] {sid}: folder not found")
@@ -58,58 +54,63 @@ if __name__ == "__main__":
         encode_and_save_filtered(str(sample_path), TEST_ENCODED_DIR, sid, maf_mask)
         print(f"[ENCODE] {sid}")
 
-    # step 3: call rate check + sparse transform
+    # step 3: sparse transform — no call rate rejection during inference
     print("\nTransforming test samples...")
-    rows      = []
-    valid_ids = []
-    y_true    = []
-
+    rows        = []
+    valid_ids   = []
+    y_true      = []
     id_to_label = dict(zip(df.iloc[:, 0].astype(str), df.iloc[:, 2]))
 
     for sid in sample_ids:
         out_path = os.path.join(TEST_ENCODED_DIR, f"{sid}.dat")
         if not os.path.exists(out_path):
             continue
-        mm      = np.memmap(out_path, dtype=np.int8, mode='r')
-        flag, rate = check_call_rate(mm, threshold=0.10)
-        if flag:
-            print(f"[REJECT] {sid}: missing rate {rate:.2%}")
-            del mm
-            continue
+        mm       = np.memmap(out_path, dtype=np.int8, mode='r')
+        _, rate  = check_call_rate(mm, threshold=0.10)
+        if rate > 0.10:
+            print(f"[WARN] {sid}: high missing rate {rate:.2%} — predicting anyway")
         rows.append(csr_matrix(mm.astype(np.float32)))
         valid_ids.append(str(sid))
         y_true.append(id_to_label[str(sid)])
         del mm
         print(f"[SPARSE] {sid}")
 
-    # step 4: PCA transform (use existing SVD, don't refit)
+    # step 4: PCA transform
     print("\nApplying PCA transform...")
     X_sparse = vstack(rows)
-    X_pca    = svd.transform(X_sparse)  # NOT fit_transform
+    X_pca    = svd.transform(X_sparse)
     print(f"Test PCA shape: {X_pca.shape}")
 
     # step 5: predict
     print("\nPredicting...")
     device   = torch.device("cuda")
-    # no unsqueeze needed, embedding handles it
-   # no unsqueeze needed, embedding handles it
-    X_tensor = torch.tensor(X_pca, dtype=torch.float32).to(device)  # (5, 50)# (5, 50)
+    X_tensor = torch.tensor(X_pca, dtype=torch.float32).to(device)
 
     with torch.no_grad():
         logits = model(X_tensor)
         preds  = logits.argmax(dim=1).cpu().numpy()
 
-    y_pred = le.inverse_transform(preds)
+    y_pred         = le.inverse_transform(preds)
+    y_true_encoded = le.transform(y_true)
 
-    # step 6: results
-    print("\n── Results ──────────────────────────────")
+    # step 6: per sample results
+    print("\n── Per Sample Results ───────────────────")
     for sid, true, pred in zip(valid_ids, y_true, y_pred):
         match = "✓" if true == pred else "✗"
-        print(f"  {match} ID {sid}: true={true}, predicted={pred}")
+        print(f"  {match} ID {sid}: true={true:12s} predicted={pred}")
 
-    if any(l in le.classes_ for l in y_true):
-        y_true_encoded = le.transform(y_true)
-        print("\nClassification Report:")
-        print(classification_report(y_true_encoded, preds, target_names=le.classes_))
-        print("Confusion Matrix:")
-        print(confusion_matrix(y_true_encoded, preds))
+    # step 7: eval metrics
+    print("\n── Evaluation Metrics ───────────────────")
+    print(f"Accuracy:          {(y_true_encoded == preds).mean():.2%}")
+    print(f"Balanced Accuracy: {balanced_accuracy_score(y_true_encoded, preds):.2%}")
+    print(f"Matthews CC:       {matthews_corrcoef(y_true_encoded, preds):.4f}")
+
+    print("\nClassification Report:")
+    print(classification_report(y_true_encoded, preds, target_names=le.classes_))
+
+    print("Confusion Matrix:")
+    cm     = confusion_matrix(y_true_encoded, preds)
+    header = f"{'':15s}" + "".join(f"{c:12s}" for c in le.classes_)
+    print(header)
+    for i, row in enumerate(cm):
+        print(f"{le.classes_[i]:15s}" + "".join(f"{v:12d}" for v in row))

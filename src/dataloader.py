@@ -95,7 +95,7 @@ def process_one(sno: str, url: str, label: str) -> bool:
         return True
 
     except Exception as e:
-        print(f"  ✗ Error: {e}")
+        print(f"  Error: {e}")
         if os.path.exists(output_path):
             shutil.rmtree(output_path)
         return False
@@ -160,7 +160,7 @@ def run():
             print(f"  ✗ Failed")
 
     print(f"\n{'─' * 50}")
-    print(f"Done.  ✓ {len(pending) - len(failed)}   ✗ {len(failed)}")
+    print(f"Done.  {len(pending) - len(failed)}   {len(failed)}")
 
     if failed:
         with open("failed.csv", 'w', newline='') as f:
