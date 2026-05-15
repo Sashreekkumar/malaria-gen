@@ -162,16 +162,3 @@ Output: (batch, n_classes)    raw logits
 ```
 
 ---
-
-## Author
-
-**Sashreek Kumar**  
-Chaitanya Bharathi Institute of Technology  
-[sashreek_kumar@outlook.com](mailto:sashreek_kumar@outlook.com)  
-[github.com/Sashreekkumar](https://github.com/Sashreekkumar)
-
----
-
-## Acknowledgements
-
-This work was developed as part of a Google Summer of Code 2026 proposal for the MalariaGEN Vector Observatory project.
